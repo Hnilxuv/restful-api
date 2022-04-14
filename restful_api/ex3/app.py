@@ -1,6 +1,5 @@
 import datetime
-
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, jsonify
 from werkzeug.utils import redirect
 import pyodbc
 import random as r
@@ -104,17 +103,17 @@ def bill_detail_add(id):
     bill_info = [b]
     if request.method == 'POST':
         bill_id = id
-        product_id = request.form.get('product_id')
-        quantity = request.form.get('quantity')
+        product_id = request.json.get('product_id')
+        quantity = request.json.get('quantity')
         cursor.execute("insert BILL_DETAIL values (?,?,?)", bill_id, product_id, quantity)
         cnx.commit()
-        # bill_detail = cursor.execute("Select * From BILL_DETAIL Where bill_id= ?", id)
-        # bd = bill_detail.fetchall()
-        # bill_detail_info = []
-        # for row in bd:
-        #     bill_detail_info.append(row)
-        return render_template("Add_bill_detail.html", bill_info=bill_info)
-    return render_template("Add_bill_detail.html", bill_info=bill_info)
+        bill_detail = cursor.execute("Select * From BILL_DETAIL Where bill_id= ?", id)
+        bd = bill_detail.fetchall()
+        bill_detail_info = []
+        for row in bd:
+            bill_detail_info.append(row)
+        return jsonify({'a': 'aa'})
+    return jsonify({'a': 'ab'})
 
 
 @app.route('/Bill/<int:id>')

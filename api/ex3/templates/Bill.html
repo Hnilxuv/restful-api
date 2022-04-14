@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</head>
+<body>
+    <div style="margin-top: 50px;" class="ui container">
+        <h1 class="ui center aligned header">Product Management</h1>
+        <H3>Add Product</H3>
+        <form class="ui form" action="/Bill/add" method="post">
+            <div class="field">
+                <label>Customer ID</label>
+                <input type="text" name="customer_id" placeholder="Enter Customer ID."><br>
+            </div>
+            <button class="ui blue button" type="submit" >Add</button>
+        </form>
+
+        <hr>
+        <h2>Account List</h2>
+        <table border="1" style="margin-top: 10px; ">
+          <thead class="thread-light">
+            <tr>
+                <th> Bill ID</th>
+                <th> Customer ID</th>
+                <th> Time Create</th>
+                <th></th>
+                <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for item in bill_list %}
+            <tr>
+                <td>{{ item.bill_id }}</td>
+                <td>{{ item.customer_id }}</td>
+                <td>{{ item.time }}</td>
+                <td><a class="ui blue button" href="/Bill/{{item.bill_id}}">Detail</a></td>
+                <td><a class="ui red button" href="/Bill/Addbilldetal/{{item.bill_id}}">Add Bill Detail</a></td>
+            </tr>
+
+          {% endfor %}
+          </tbody>
+        </table>
+    </div>
+</body>
+</html>

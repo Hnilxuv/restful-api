@@ -31,9 +31,10 @@
         <table class="table table-hover" style="margin-top: 10px;">
           <thead class="thead-light">
             <tr>
-              <th scope="col"> Name</th>
-              <th scope="col"> ACC No</th>
-              <th scope="col"> Balance</th>
+                <th scope="col"> Name</th>
+                <th scope="col"> Name</th>
+                <th scope="col"> ACC No</th>
+                <th scope="col"> Balance</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -41,6 +42,7 @@
           <tbody>
           {% for item in acc_list %}
             <tr>
+                <td>{{ item.id }}</td>
               <td>{{ item.name }}</td>
               <td>{{ item.acc_no }}</td>
               <td>{{ item.balance }}</td>

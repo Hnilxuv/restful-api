@@ -46,8 +46,11 @@ Bước 2: Sửa tên server name trong file db.py trong ex3 và chạy file app
 Bước 3: chạy các api theo comment
   
   - customer add    
-      + body, validate: name: string, not empty, maxlength = 50, regex: chữ ko số có cách.
-                      phone: string, not empty, regex: chỉ số, giới hạn 10
+      + body, validate: 
+      
+              name: string, not empty, maxlength = 50, regex: chữ ko số có cách.
+                      
+              phone: string, not empty, regex: chỉ số, giới hạn 10
   
   - product add
       + body, validate: 
@@ -73,6 +76,14 @@ Bước 3: chạy các api theo comment
             amount: int, not empty
   
   - với các api theo customer id --> url: .../customer/(customer_id)/.... tương tự với product (product_id), bill (bill_id)
+
+ví dụ:
+
+<img width="887" alt="image" src="https://user-images.githubusercontent.com/89204878/164392331-6f4bd516-d3c8-43b4-b128-b0dc32b8cdcd.png">
+
+<img width="885" alt="image" src="https://user-images.githubusercontent.com/89204878/164392471-3c46c42a-ab4f-4cfe-8bf0-4da0483af5bf.png">
+
+
 
 # ex4:
 Bước 1: Chạy script SQL ex4 trong file SQL Script với SQL server. (em tạo kết nối với SQL server) 

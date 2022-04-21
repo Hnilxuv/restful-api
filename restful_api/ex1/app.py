@@ -1,5 +1,4 @@
-from flask import Flask, jsonify
-
+from flask import Flask
 import bank_manage as bm
 
 app = Flask(__name__)
@@ -7,21 +6,25 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    acc_list = bm.account_show()
-    return jsonify({'acc_list': acc_list})
+    return bm.show_account()
+
+
+@app.route('/<int:id>')
+def show_by_id(id):
+    return bm.show_acc_by_id(id)
 
 
 @app.route("/add")
 def add():
-    return bm.account_add()
+    return bm.add_account()
 
 
-@app.route("/deposit/<int:id>")
+@app.route("/<int:id>/deposit")
 def deposit(id):
     return bm.account_deposit(id)
 
 
-@app.route("/withdraw/<int:id>")
+@app.route("/<int:id>/withdraw")
 def withdraw(id):
     return bm.account_withdraw(id)
 

@@ -1,8 +1,6 @@
 import pyodbc
 
+conx_string = "driver={SQL Server Native Client 11.0}; server=hnilxuv; database=ex3; trusted_connection=YES;"
 
-cnx = pyodbc.connect(Trusted_Connection='yes',
-                     Driver='{ODBC Driver 17 for SQL Server}',
-                     Server='DESKTOP-09AHFD3',
-                     Database='sale_manage')
+cnx = pyodbc.connect(conx_string)
 cursor = cnx.cursor()

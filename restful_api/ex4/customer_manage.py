@@ -1,89 +1,40 @@
-from flask import  Flask, jsonify, request
-import pyodbc
-
-app = Flask(__name__)
-
-cnxn = pyodbc.connect(Trusted_Connection='yes',
-                      Driver='{ODBC Driver 17 for SQL Server}',
-                      Server='DESKTOP-09AHFD3',
-                      Database='ex4')
-cursor = cnxn.cursor()
+from flask import jsonify, request
+from db import cursor, cnx
+from checking_manage import get_checking_acc_by_cid
+from saving_acc_manage import get_saving_acc_by_cid
+from validator import validate_cus_add
 
 
-def customer_show():
+# show customer list
+def show_customer():
     cursor.execute("Select * from customer")
     data = cursor.fetchall()
     cus_list = []
     for item in data:
         cus = {'id': item[0], 'name': item[1], 'acc_quantity': item[2]}
         cus_list.append(cus)
-    return cus_list
+    if cus_list:
+        return jsonify({'customer': cus_list})
+    else:
+        return jsonify({'mess': 'No customer is found'})
 
 
-def customer_add():
-    id = request.json['id']
-    name = request.json['name']
-    acc_quantity = request.json['acc_quantity']
-    cursor.execute("Insert customer values (?,?,?)", id, name, acc_quantity)
-    cnxn.commit()
+# add new customer
+def add_customer():
+    data = request.get_json()
+    name = data['name']
+    acc_quantity = 0
+    validate = validate_cus_add(data)
+    if validate != True:
+        return jsonify({'mess': validate_cus_add(data)})
+    else:
+        cursor.execute("Insert customer values (?,?)", name, acc_quantity)
+        cnx.commit()
+        return show_customer()
 
 
-def saving_acc_show():
-    cursor.execute("Select * from saving_account")
-    data = cursor.fetchall()
-    sa_li = []
-    for item in data:
-        sa = {'id': item[0], 'customer_id': item[1], 'acc_no': item[2],
-              'balance': item[3], 'interest_rate': item[4], 'link_code': item[5]}
-        sa_li.append(sa)
-    return jsonify({''})
-
-
-def saving_acc_add():
-    id = request.json['id']
-    customer_id = request.json['customer_id']
-    acc_no = request.json['acc_no']
-    balance = request.json['balance']
-    ir = request.json['ir']
-    link_code = request.json['link_code']
-    cursor.execute('insert saving_account values (?,?,?,?,?,?)', id, customer_id, acc_no, balance, ir, link_code)
-    cnxn.commit()
-    cursor.execute('select acc_quantity from customer where customer_id = ?', customer_id)
-    acc_quantity = cursor.fetchone()
-    tmp = acc_quantity[0] + 1
-    cursor.execute("update customer set acc_quantity = ? where customer_id = ?", tmp, customer_id)
-    cnxn.commit()
-    return saving_acc_show()
-
-
-def checking_acc_show():
-    cursor.execute("Select * from checking_account")
-    data = cursor.fetchall()
-    ca_li = []
-    for item in data:
-        ca = {'id': item[0], 'customer_id': item[1], 'acc_no': item[2],
-              'balance': item[3], 'link_code': item[4]}
-        ca_li.append(ca)
-    return ca_li
-
-
-def checking_acc_add():
-    id = request.json['id']
-    customer_id = request.json['customer_id']
-    acc_no = request.json['acc_no']
-    balance = request.json['balance']
-    link_code = request.json['link_code']
-    cursor.execute('insert saving_account values (?,?,?,?,?)', id, customer_id, acc_no, balance, link_code)
-    cnxn.commit()
-    cursor.execute('select acc_quantity from customer where customer_id = ?', customer_id)
-    acc_quantity = cursor.fetchone()
-    tmp = acc_quantity[0] + 1
-    cursor.execute("update customer set acc_quantity = ? where customer_id = ?", tmp, customer_id)
-    cnxn.commit()
-    return checking_acc_show()
-
-
-def customer_by_id(id):
+# get customer info by customer id
+def get_customer_by_id(id):
     cursor.execute("Select * from customer where customer_id = ?", id)
     data = cursor.fetchall()
     cus_list = []
@@ -93,25 +44,54 @@ def customer_by_id(id):
     return cus_list
 
 
-def saving_acc_by_cid(id):
-    cursor.execute("Select * from saving_account where customer_id = ?", id)
-    data1 = cursor.fetchall()
-    sa_li = []
-    for item in data1:
-        sa = {'id': item[0], 'customer_id': item[1], 'acc_no': item[2],
-              'balance': item[3], 'interest_rate': item[4], 'link_code': item[5]}
-        sa_li.append(sa)
-    return sa_li
+# show customer info by customer id
+def show_cus_by_id(id):
+    cus = get_customer_by_id(id)
+    return jsonify({'customer': cus})
 
 
-def checking_acc_by_cid(id):
-    cursor.execute("Select * from checking_account where customer_id = ?", id)
-    data2 = cursor.fetchall()
-    ca_li = []
-    for item in data2:
-        ca = {'id': item[0], 'customer_id': item[1], 'acc_no': item[2],
-              'balance': item[3], 'link_code': item[4]}
-        ca_li.append(ca)
-    return ca_li
+# update acc_quantity after add by customer_id
+def incr_acc_quantity(customer_id):
+    cursor.execute("select acc_quantity from customer where customer_id = ?", customer_id)
+    acc_quantity = cursor.fetchone()
+    tmp = acc_quantity[0] + 1
+    cursor.execute("update customer set acc_quantity = ? where customer_id = ?", tmp, customer_id)
+    cnx.commit()
 
 
+# check acc_no is existed
+def check_acc_no_exist(acc_no):
+    cursor.execute("select acc_no from saving_account checking_account where acc_no =?", acc_no)
+    data = cursor.fetchall()
+    if data:
+        return True
+    else:
+        return False
+
+
+# check customer is existed by customer_id
+def check_customer_id_exist(id):
+    cursor.execute("select customer_id from customer where customer_id =?", id)
+    data = cursor.fetchall()
+    if data:
+        return True
+    else:
+        return False
+
+
+# show all info customer by id
+def show_all_info_cus_by_id(id):
+    cus = get_customer_by_id(id)
+    if cus:
+        sa_list = get_saving_acc_by_cid(id)
+        ca_list = get_checking_acc_by_cid(id)
+        if sa_list and ca_list:
+            return jsonify({'Customer': cus, 'saving acc': sa_list, 'checking acc': ca_list})
+        elif sa_list and not ca_list:
+            return jsonify({'Customer': cus, 'saving acc': sa_list, 'checking acc': 'None'})
+        elif sa_list and not ca_list:
+            return jsonify({'Customer': cus, 'saving acc': 'None', 'checking acc': ca_list})
+        else:
+            return jsonify({'Customer': cus, 'saving acc': 'None', 'checking acc': 'None'})
+    else:
+        return jsonify({'mes': 'no acc is found'})

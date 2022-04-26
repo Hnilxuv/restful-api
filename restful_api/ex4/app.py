@@ -63,5 +63,10 @@ def handle_500_error(_error):
     return make_response(jsonify({'error': 'something went wrong'}), 500)
 
 
+@app.errorhandler(405)
+def handle_405_error(_error):
+    return make_response(jsonify({'error': 'invalid method'}), 405)
+
+
 if __name__ == "__main__":
     app.run()

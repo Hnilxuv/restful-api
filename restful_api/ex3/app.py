@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, make_response, jsonify
 import customer_manage as cm
 import bill_manage as bm
 import product_manage as pm
@@ -78,6 +78,21 @@ def show_bill_detail_by_id(id):
 @app.route('/Bill/<int:id>/add')
 def add_bill_detail(id):
     return bdm.bill_detail_add(id)
+
+
+@app.errorhandler(400)
+def handle_400_error(_error):
+    return make_response(jsonify({'error': 'not found'}), 400)
+
+
+@app.errorhandler(404)
+def handle_404_error(_error):
+    return make_response(jsonify({'error': 'not found'}), 404)
+
+
+@app.errorhandler(500)
+def handle_500_error(_error):
+    return make_response(jsonify({'error': 'something went wrong'}), 500)
 
 
 if __name__ == "__main__":

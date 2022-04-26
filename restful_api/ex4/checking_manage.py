@@ -57,3 +57,44 @@ def show_checking_acc_by_cid(id):
         return jsonify({'checking acc': ca})
     else:
         return jsonify({'mess': 'no checking account is found'})
+
+
+# deposit from checking account
+def deposit_checking_acc(id):
+    if get_checking_acc_by_cid(id):
+        amount = request.json['amount']
+        if amount > 0:
+            a = cursor.execute("Select balance from checking_account where id= ?", id)
+            balance = a.fetchone()
+            tmp = balance[0] + amount
+            cursor.execute("update saving_account set balance = ? where id= ?", (tmp, id))
+            cnx.commit()
+            show_checking_acc_by_cid(id)
+        else:
+            return 'invalid data'
+    else:
+        return jsonify({'no saving account is found'})
+
+
+def account_withdraw(id):
+    if get_checking_acc_by_cid(id):
+        data = request.get_json()
+        validate = validate_acc_add(data)
+        if validate != True:
+            return jsonify({'mess': validate})
+        else:
+            amount = data['amount']
+            balance = get_balance_by_id(id)
+            if (amount + balance/100) <= balance:
+                if amount <= 100000:
+                    amount += 1000
+                    update_balance(id, 'w', balance, amount)
+                    return show_acc_by_id(id)
+                else:
+                    amount += amount/100
+                    update_balance(id, 'w', balance, amount)
+                    return show_acc_by_id(id)
+            else:
+                return 'balance is not enough to withdraw'
+    else:
+        return jsonify({'mes': 'No acc is found'})

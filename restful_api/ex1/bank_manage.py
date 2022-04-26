@@ -121,6 +121,6 @@ def get_account_by_id(id):
 def show_acc_by_id(id):
     acc_list = get_account_by_id(id)
     if acc_list:
-        return jsonify({'acc_list': acc_list})
+        return jsonify(acc_list)
     else:
-        return jsonify({'mes': 'No acc is found'})
+        return 'No acc is found'

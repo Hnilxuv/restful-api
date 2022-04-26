@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response
 import customer_manage as cm
 import saving_acc_manage as sam
 import checking_manage as cam
@@ -46,6 +46,21 @@ def checking_account_add():
 @app.route('/customer/<int:id>')
 def customer_detail(id):
     return cm.show_all_info_cus_by_id(id)
+
+
+@app.errorhandler(400)
+def handle_400_error(_error):
+    return make_response(jsonify({'error': 'not found'}), 400)
+
+
+@app.errorhandler(404)
+def handle_404_error(_error):
+    return make_response(jsonify({'error': 'not found'}), 404)
+
+
+@app.errorhandler(500)
+def handle_500_error(_error):
+    return make_response(jsonify({'error': 'something went wrong'}), 500)
 
 
 if __name__ == "__main__":

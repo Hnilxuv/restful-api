@@ -52,7 +52,7 @@ def get_saving_acc_by_cid(id):
     return sa_li
 
 
-def show_saving_acc_by_id(id):
+def show_saving_acc_by_cid(id):
     sa = get_saving_acc_by_cid(id)
     if sa:
         return jsonify({'saving acc': sa})
@@ -69,7 +69,7 @@ def deposit_saving_acc(id):
             tmp = balance[0] + amount
             cursor.execute("update saving_account set balance = ? where id= ?", (tmp, id))
             cnx.commit()
-            show_saving_acc_by_id(id)
+            show_saving_acc_by_cid(id)
         else:
             return 'invalid data'
     else:

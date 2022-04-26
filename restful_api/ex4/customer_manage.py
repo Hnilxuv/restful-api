@@ -61,7 +61,7 @@ def incr_acc_quantity(customer_id):
 
 # check acc_no is existed
 def check_acc_no_exist(acc_no):
-    cursor.execute("select acc_no from saving_account checking_account where acc_no =?", acc_no)
+    cursor.execute("select acc_no from saving_account, checking_account where acc_no =?", acc_no)
     data = cursor.fetchall()
     if data:
         return True
